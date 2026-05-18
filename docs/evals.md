@@ -16,6 +16,7 @@ The goal is not only to return similar text. The goal is to return allowed, fres
 | Filtered answer safety | Restricted text does not leak into the generated answer | Scope filtering must protect both citations and answer text |
 | No context fallback | Empty readable retrieval returns an explicit fallback | Agents should say when allowed context is insufficient |
 | Result cap | `maxResults` limits returned citations | Retrieval behavior should stay predictable for downstream workflows |
+| Conflicting allowed context flagged | Multiple readable sources in the same conflict group emit a warning and audit event | Operators need to know when allowed sources disagree before taking action |
 
 ## Failure cases this catches
 
@@ -26,6 +27,7 @@ The goal is not only to return similar text. The goal is to return allowed, fres
 5. Empty retrieval pretends to know the answer.
 6. Restricted source text leaks through the final answer.
 7. Retrieval ignores caller supplied result caps.
+8. Allowed sources disagree but the agent answer hides the conflict.
 
 ## Additional evals to add next
 
@@ -39,6 +41,6 @@ The goal is not only to return similar text. The goal is to return allowed, fres
 
 ## Interview framing
 
-For production retrieval, I would test more than semantic similarity. I would test whether the retrieval layer respects permissions, returns citations, labels stale context, handles no-context cases, and emits enough audit events for an operator to understand what happened.
+For production retrieval, I would test more than semantic similarity. I would test whether the retrieval layer respects permissions, returns citations, labels stale context, flags conflicting allowed sources, handles no-context cases, and emits enough audit events for an operator to understand what happened.
 
 Retrieval is part of the safety boundary. If an agent can retrieve data it should not see, or if it answers without traceable context, the workflow becomes difficult to trust.

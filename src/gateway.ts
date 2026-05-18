@@ -58,11 +58,21 @@ export function retrieveContext(request: RetrievalRequest): RetrievalResult {
       updatedAt: item.doc.updatedAt,
       freshness: freshness(item.doc, now),
       classification: item.doc.classification,
-      score: item.score
+      score: item.score,
+      conflictGroup: item.doc.conflictGroup
     });
   }
 
   const citations = readable.slice(0, maxResults);
+  const conflictGroups = new Map<string, Citation[]>();
+
+  for (const citation of citations) {
+    if (!citation.conflictGroup) continue;
+    conflictGroups.set(citation.conflictGroup, [...(conflictGroups.get(citation.conflictGroup) ?? []), citation]);
+  }
+
+  const conflictingGroups = [...conflictGroups.entries()].filter(([, groupCitations]) => groupCitations.length > 1);
+  const warnings = conflictingGroups.map(([group]) => `conflicting context detected for ${group}`);
 
   if (citations.length === 0) {
     auditEvents.push({ type: "retrieval.empty", message: "No readable context matched the request" });
@@ -70,8 +80,18 @@ export function retrieveContext(request: RetrievalRequest): RetrievalResult {
       status: "needs_more_context",
       answer: "I do not have enough allowed context to answer this safely.",
       citations,
-      auditEvents
+      auditEvents,
+      warnings: []
     };
+  }
+
+  for (const [group, groupCitations] of conflictingGroups) {
+    auditEvents.push({
+      type: "context.conflict_detected",
+      message: "Multiple allowed citations share a conflict group",
+      reason: group,
+      documentId: groupCitations.map((citation) => citation.documentId).join(",")
+    });
   }
 
   auditEvents.push({ type: "retrieval.completed", message: `Returned ${citations.length} citation(s)` });
@@ -80,10 +100,13 @@ export function retrieveContext(request: RetrievalRequest): RetrievalResult {
     ? " Some context is stale and should be reviewed before action."
     : "";
 
+  const conflictNote = warnings.length > 0 ? "Allowed context has conflicting sources; review citations before action. " : "";
+
   return {
     status: "answered",
-    answer: `Based on allowed context, the strongest relevant point is: ${citations[0].excerpt}${staleNote}`,
+    answer: `${conflictNote}Based on allowed context, the strongest relevant point is: ${citations[0].excerpt}${staleNote}`,
     citations,
-    auditEvents
+    auditEvents,
+    warnings
   };
 }

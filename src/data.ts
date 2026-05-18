@@ -20,6 +20,26 @@ export const documents: KnowledgeDocument[] = [
     tags: ["retrieval", "policy", "citations"]
   },
   {
+    id: "doc-public-approval-threshold",
+    title: "Public approval threshold",
+    body: "Customer followup automation should require human approval when the estimated impact is above 500 dollars.",
+    classification: "public",
+    requiredScopes: [],
+    updatedAt: "2026-05-17T12:00:00.000Z",
+    tags: ["approval", "threshold", "customer-followup"],
+    conflictGroup: "customer-followup-approval-threshold"
+  },
+  {
+    id: "doc-internal-approval-threshold",
+    title: "Internal approval threshold",
+    body: "Customer followup automation should require human approval when the estimated impact is above 1000 dollars.",
+    classification: "internal",
+    requiredScopes: ["docs:read"],
+    updatedAt: "2026-05-17T12:00:00.000Z",
+    tags: ["approval", "threshold", "customer-followup"],
+    conflictGroup: "customer-followup-approval-threshold"
+  },
+  {
     id: "doc-restricted-payments",
     title: "Payments incident runbook",
     body: "Payment incident actions require admin role, finance scope, explicit approval, and full audit logging before any operational change.",

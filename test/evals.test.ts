@@ -61,5 +61,6 @@ test("retrieval respects max result cap", () => {
 test("eval suite passes", () => {
   const evals = runEvals();
   expect(evals.passed).toBe(true);
-  expect(evals.checks).toHaveLength(8);
+  expect(evals.checks).toHaveLength(9);
+  expect(evals.checks.some((check) => check.name === "conflicting allowed context is flagged" && check.passed)).toBe(true);
 });

@@ -14,6 +14,7 @@ export type KnowledgeDocument = {
   requiredScopes: string[];
   updatedAt: string;
   tags: string[];
+  conflictGroup?: string;
 };
 
 export type RetrievalRequest = {
@@ -31,6 +32,7 @@ export type Citation = {
   freshness: "fresh" | "stale";
   classification: Classification;
   score: number;
+  conflictGroup?: string;
 };
 
 export type RetrievalResult = {
@@ -38,6 +40,7 @@ export type RetrievalResult = {
   answer: string;
   citations: Citation[];
   auditEvents: AuditEvent[];
+  warnings: string[];
 };
 
 export type AuditEvent = {
