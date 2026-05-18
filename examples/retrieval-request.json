@@ -1,0 +1,9 @@
+{
+  "actor": {
+    "id": "operator-1",
+    "role": "operator",
+    "scopes": ["docs:read"]
+  },
+  "query": "How should retrieval handle citations and restricted context?",
+  "now": "2026-05-18T00:00:00.000Z"
+}
