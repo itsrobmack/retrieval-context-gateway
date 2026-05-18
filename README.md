@@ -40,7 +40,7 @@ curl -X POST http://localhost:8792/retrieve \
 
 ## Eval coverage
 
-The eval suite validates permission aware retrieval behavior: scope filtering, allowed citations, stale context labels, citation output, and audit events.
+The eval suite validates permission aware retrieval behavior: scope filtering, allowed citations, stale context labels, no-context fallback, result caps, answer safety, citation output, and audit events.
 
 See [`docs/evals.md`](docs/evals.md).
 

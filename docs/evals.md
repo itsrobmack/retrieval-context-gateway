@@ -13,6 +13,9 @@ The goal is not only to return similar text. The goal is to return allowed, fres
 | Stale context labeled | Old context is marked stale | Stale context may require review before action |
 | Citation output present | Answers include document ids, excerpts, and freshness | Operators need traceability from answer to source |
 | Audit trail recorded | Retrieval emits started, filtered, and completed events | Operators need to reconstruct what happened |
+| Filtered answer safety | Restricted text does not leak into the generated answer | Scope filtering must protect both citations and answer text |
+| No context fallback | Empty readable retrieval returns an explicit fallback | Agents should say when allowed context is insufficient |
+| Result cap | `maxResults` limits returned citations | Retrieval behavior should stay predictable for downstream workflows |
 
 ## Failure cases this catches
 
@@ -21,6 +24,8 @@ The goal is not only to return similar text. The goal is to return allowed, fres
 3. Stale context is treated as fresh.
 4. Filtered documents disappear without an audit reason.
 5. Empty retrieval pretends to know the answer.
+6. Restricted source text leaks through the final answer.
+7. Retrieval ignores caller supplied result caps.
 
 ## Additional evals to add next
 
@@ -29,7 +34,8 @@ The goal is not only to return similar text. The goal is to return allowed, fres
 3. Metadata filtering by customer, team, or workspace.
 4. Query rewriting with audit events.
 5. Citation span offsets for exact source highlighting.
-6. Eval fixtures for no context, weak context, and conflicting context.
+6. Eval fixtures for weak context and conflicting context.
+7. Workspace specific access boundaries.
 
 ## Interview framing
 

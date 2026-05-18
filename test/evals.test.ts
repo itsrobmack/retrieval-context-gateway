@@ -11,6 +11,7 @@ test("retrieval filters documents by actor scope", () => {
 
   expect(result.citations.some((citation) => citation.documentId === "doc-internal-retrieval-policy")).toBe(false);
   expect(result.auditEvents.some((event) => event.type === "document.filtered")).toBe(true);
+  expect(result.answer.toLowerCase()).not.toContain("unauthorized users");
 });
 
 test("retrieval returns citations for allowed context", () => {
@@ -34,6 +35,31 @@ test("retrieval labels stale context", () => {
   expect(result.citations.some((citation) => citation.freshness === "stale")).toBe(true);
 });
 
+test("retrieval returns explicit fallback when no readable context exists", () => {
+  const result = retrieveContext({
+    actor: { id: "guest", role: "guest", scopes: [] },
+    query: "xylophone nebula marmalade",
+    now: "2026-05-18T00:00:00.000Z"
+  });
+
+  expect(result.status).toBe("needs_more_context");
+  expect(result.citations).toHaveLength(0);
+  expect(result.auditEvents.some((event) => event.type === "retrieval.empty")).toBe(true);
+});
+
+test("retrieval respects max result cap", () => {
+  const result = retrieveContext({
+    actor: { id: "admin", role: "admin", scopes: ["finance:read"] },
+    query: "ai platform retrieval approval policy incident",
+    maxResults: 1,
+    now: "2026-05-18T00:00:00.000Z"
+  });
+
+  expect(result.citations).toHaveLength(1);
+});
+
 test("eval suite passes", () => {
-  expect(runEvals().passed).toBe(true);
+  const evals = runEvals();
+  expect(evals.passed).toBe(true);
+  expect(evals.checks).toHaveLength(8);
 });
